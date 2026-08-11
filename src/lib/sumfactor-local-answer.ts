@@ -259,7 +259,30 @@ export function answerLocally(question: string): string {
     ].join("\n");
   }
 
-  if (has(q, "about", "company", "who are you", "history", "founded", "established", "team", "leadership", "ceo", "values", "mission", "vision")) {
+  const strongContentMatch =
+    Math.max(scoreProjects(q)[0]?.score ?? 0, scoreServices(q)[0]?.score ?? 0) >= 4;
+
+  if (
+    !strongContentMatch &&
+    has(
+      q,
+      "about sumfactor",
+      "about the company",
+      "about you",
+      "who are you",
+      "your company",
+      "history",
+      "founded",
+      "established",
+      "leadership",
+      "core values",
+      "mission",
+      "vision",
+      "ceo",
+      "director",
+    )
+  ) {
+
     return [
       "**About Sumfactor** — tagline: *Possible Together!*",
       "- Custom software and mobile app development company, established in 2019.",
