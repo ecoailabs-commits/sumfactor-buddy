@@ -40,7 +40,8 @@ const SERVICES = [
 
 function Index() {
   return (
-    <main className="relative min-h-screen overflow-hidden bg-background">
+    <>
+      <main className="relative min-h-screen overflow-hidden bg-background">
       <div className="pointer-events-none absolute inset-0 bg-hero-glow" />
       <section className="relative mx-auto flex max-w-3xl flex-col items-center px-6 py-24 text-center sm:py-32">
         <span className="rounded-full border border-border bg-surface px-4 py-1.5 text-xs font-medium tracking-wide text-muted-foreground uppercase">
@@ -78,7 +79,8 @@ function Index() {
           </a>
         </p>
       </section>
+      </main>
       <ChatWidget />
-    </main>
+    </>
   );
 }
