@@ -151,3 +151,9 @@
     color: var(--color-foreground);
   }
 }
+
+@utility bg-hero-glow {
+  background-image:
+    radial-gradient(60% 50% at 50% 0%, oklch(0.62 0.16 232 / 0.28), transparent 70%),
+    radial-gradient(45% 40% at 85% 20%, oklch(0.78 0.13 190 / 0.16), transparent 70%);
+}
