@@ -22,7 +22,7 @@ const SUGGESTIONS = [
 /** Minimal, safe markdown-ish renderer: headings, bold, bullets and links. */
 function renderInline(text: string, keyPrefix: string) {
   const parts = text
-    .split(/(\*{1,2}[^*\n]+\*{1,2}|https?:\/\/[^\s)]+)/g)
+    .split(/(\*{1,2}[^*\s][^*\n]*\*{1,2}|https?:\/\/[^\s)]+)/g)
     .filter((p) => p !== "" && p !== undefined);
   return parts.map((part, i) => {
     const key = `${keyPrefix}-${i}`;
@@ -39,7 +39,7 @@ function renderInline(text: string, keyPrefix: string) {
         </a>
       );
     }
-    const emphasis = part.match(/^\*{1,2}([^*\n]+)\*{1,2}$/);
+    const emphasis = part.match(/^\*{1,2}([^*\n]+?)\*{1,2}$/);
     if (emphasis) {
       return (
         <strong key={key} className="font-semibold">
@@ -66,11 +66,11 @@ function MessageBody({ content }: { content: string }) {
             </h3>
           );
         }
-        if (/^[-•]\s/.test(trimmed)) {
+        if (/^[-•*]\s/.test(trimmed)) {
           return (
             <div key={i} className="flex gap-2 pl-1">
               <span className="mt-[7px] size-1.5 shrink-0 rounded-full bg-accent" />
-              <span>{renderInline(trimmed.replace(/^[-•]\s/, ""), `b${i}`)}</span>
+              <span>{renderInline(trimmed.replace(/^[-•*]\s+/, ""), `b${i}`)}</span>
             </div>
           );
         }
