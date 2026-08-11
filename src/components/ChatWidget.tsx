@@ -1,7 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { MessageSquare, X, Send, Loader2 } from "lucide-react";
+import { askSumfactor } from "@/lib/sumfactor-chat.functions";
 import { answerLocally } from "@/lib/sumfactor-local-answer";
 import { cn } from "@/lib/utils";
+
 
 
 type ChatMessage = { role: "user" | "assistant"; content: string };
@@ -86,6 +89,7 @@ export function ChatWidget() {
   const [messages, setMessages] = useState<ChatMessage[]>([GREETING]);
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const ask = useServerFn(askSumfactor);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
@@ -93,20 +97,27 @@ export function ChatWidget() {
 
   const showSuggestions = useMemo(() => messages.length === 1 && !loading, [messages, loading]);
 
-  function send(text: string) {
+  async function send(text: string) {
     const content = text.trim();
     if (!content || loading) return;
     const next = [...messages, { role: "user" as const, content }];
     setMessages(next);
     setInput("");
     setLoading(true);
-    // Answered entirely on-device — no API calls, no credits consumed.
-    const reply = answerLocally(content);
-    window.setTimeout(() => {
-      setMessages([...next, { role: "assistant", content: reply }]);
+    try {
+      // Answered by the site owner's own Gemini key (free tier) — no Lovable credits.
+      const result = await ask({
+        data: { messages: next.filter((m) => m !== GREETING).slice(-20) },
+      });
+      setMessages([...next, { role: "assistant", content: result.reply }]);
+    } catch {
+      // Offline / request failure: answer from the on-device knowledge engine.
+      setMessages([...next, { role: "assistant", content: answerLocally(content) }]);
+    } finally {
       setLoading(false);
-    }, 250);
+    }
   }
+
 
 
   return (
