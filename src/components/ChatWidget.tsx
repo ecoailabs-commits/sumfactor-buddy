@@ -21,7 +21,9 @@ const SUGGESTIONS = [
 
 /** Minimal, safe markdown-ish renderer: headings, bold, bullets and links. */
 function renderInline(text: string, keyPrefix: string) {
-  const parts = text.split(/(\*\*[^*]+\*\*|\*[^*\n]+\*|https?:\/\/[^\s)]+)/g).filter(Boolean);
+  const parts = text
+    .split(/(\*{1,2}[^*\n]+\*{1,2}|https?:\/\/[^\s)]+)/g)
+    .filter((p) => p !== "" && p !== undefined);
   return parts.map((part, i) => {
     const key = `${keyPrefix}-${i}`;
     if (/^https?:\/\//.test(part)) {
@@ -37,22 +39,17 @@ function renderInline(text: string, keyPrefix: string) {
         </a>
       );
     }
-    if (part.startsWith("**") && part.endsWith("**")) {
+    const emphasis = part.match(/^\*{1,2}([^*\n]+)\*{1,2}$/);
+    if (emphasis) {
       return (
         <strong key={key} className="font-semibold">
-          {part.slice(2, -2)}
-        </strong>
-      );
-    }
-    if (part.startsWith("*") && part.endsWith("*") && part.length > 2) {
-      return (
-        <strong key={key} className="font-semibold">
-          {part.slice(1, -1)}
+          {emphasis[1]}
         </strong>
       );
     }
     return <span key={key}>{part}</span>;
   });
+
 }
 
 function MessageBody({ content }: { content: string }) {
